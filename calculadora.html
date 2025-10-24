@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Captación de Agua de Lluvia - Zinacantepec</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        *{box-sizing:border-box;margin:0;padding:0;font-family:'Segoe UI',Arial,sans-serif}
+        body{background:linear-gradient(135deg,#e3f2fd 0%,#bbdefb 100%);color:#333;line-height:1.6;padding:20px;min-height:100vh}
+        .container{max-width:1000px;margin:0 auto;background:white;border-radius:15px;box-shadow:0 10px 30px rgba(0,0,0,0.1);overflow:hidden}
+        header{background:linear-gradient(135deg,#1976d2 0%,#0d47a1 100%);color:white;padding:30px;text-align:center}
+        h1{font-size:2.2rem;margin-bottom:10px}
+        .subtitle{font-size:1.1rem;opacity:0.9}
+        .content{display:flex;flex-wrap:wrap;padding:0}
+        .calculator-section,.info-section{flex:1;min-width:300px;padding:30px}
+        .calculator-section{border-right:1px solid #e0e0e0}
+        .info-section{background:#f9f9f9}
+        h2{color:#1976d2;margin-bottom:20px;padding-bottom:10px;border-bottom:2px solid #e3f2fd}
+        h3{color:#1976d2;margin:20px 0 10px}
+        .form-group{margin-bottom:20px}
+        label{display:block;margin-bottom:8px;font-weight:600;color:#555}
+        input,select{width:100%;padding:12px 15px;border:2px solid #e0e0e0;border-radius:8px;font-size:16px;transition:all 0.3s}
+        input:focus,select:focus{border-color:#1976d2;outline:none;box-shadow:0 0 0 3px rgba(25,118,210,0.2)}
+        button{background:linear-gradient(135deg,#1976d2 0%,#0d47a1 100%);color:white;border:none;padding:15px 30px;border-radius:8px;cursor:pointer;font-size:18px;font-weight:600;transition:all 0.3s;width:100%;margin-top:10px}
+        button:hover{transform:translateY(-2px);box-shadow:0 5px 15px rgba(0,0,0,0.1)}
+        .results{margin-top:30px;padding:20px;background:#e3f2fd;border-radius:10px;display:none}
+        .result-item{display:flex;justify-content:space-between;margin-bottom:15px;padding-bottom:10px;border-bottom:1px dashed #90caf9}
+        .result-value{font-weight:700;color:#0d47a1}
+        .info-box{background:white;padding:20px;border-radius:10px;margin-bottom:20px;box-shadow:0 3px 10px rgba(0,0,0,0.05)}
+        .info-box h3{color:#1976d2;margin-bottom:10px}
+        .material-list{list-style-type:none}
+        .material-list li{padding:8px 0;border-bottom:1px solid #f0f0f0}
+        .coeficiente{float:right;font-weight:bold;color:#0d47a1}
+        footer{text-align:center;padding:20px;background:#f5f5f5;color:#666;font-size:0.9rem}
+        .water-icon{font-size:24px;margin-right:10px;vertical-align:middle}
+        .equivalents-container{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:15px;margin:20px 0}
+        .equivalent-card{background:white;border-radius:10px;padding:15px;text-align:center;box-shadow:0 3px 10px rgba(0,0,0,0.05)}
+        .equivalent-icon{font-size:30px;margin-bottom:10px}
+        .equivalent-value{font-size:1.2rem;font-weight:bold;color:#0d47a1;margin:5px 0}
+        .share-buttons{display:flex;gap:10px;margin:20px 0;flex-wrap:wrap}
+        .share-btn{flex:1;min-width:120px;padding:10px 15px;border-radius:8px;font-weight:600;text-align:center;cursor:pointer;transition:all 0.3s}
+        .whatsapp-btn{background:#25D366;color:white}
+        .twitter-btn{background:#1DA1F2;color:white}
+        .facebook-btn{background:#1877F2;color:white}
+        .share-btn:hover{transform:translateY(-2px);box-shadow:0 5px 10px rgba(0,0,0,0.1)}
+        .chart-container{margin:20px 0;background:white;border-radius:10px;padding:15px;box-shadow:0 3px 10px rgba(0,0,0,0.05)}
+        .investment-section{background:white;border-radius:10px;padding:15px;margin:20px 0;box-shadow:0 3px 10px rgba(0,0,0,0.05)}
+        .saved-results{background:#e8f5e9;border-radius:10px;padding:15px;margin:20px 0;border-left:4px solid #4CAF50}
+        a{ text-decoration: none;}
+        img{
+            width: 30vw;
+            height: 30vh;
+        }
+        @media (max-width:768px){.content{flex-direction:column}.calculator-section{border-right:none;border-bottom:1px solid #e0e0e0}.share-buttons{flex-direction:column}}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><span class="water-icon"><a href="index.html">💧</a></span>Calculadora de Captación de Agua de Lluvia</h1>
+            <p class="subtitle">Zinacantepec, Estado de México</p>
+        </header>
+        <div class="content">
+            <section class="calculator-section">
+                <h2>Calculadora de captación</h2>
+                
+                <form id="rainwaterCalculator">
+                    <div class="form-group">
+                        <label for="roofArea">Área de captación del techo (m²):</label>
+                        <input type="number" id="roofArea" min="1" max="1000" placeholder="Ej: 100" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="roofMaterial">Material del techo:</label>
+                        <select id="roofMaterial" required>
+                            <option value="">Selecciona un material</option>
+                            <option value="0.90">Lámina galvanizada (90% eficiencia)</option>
+                            <option value="0.85">Lámina acanalada (85% eficiencia)</option>
+                            <option value="0.80">Concreto/losa (80% eficiencia)</option>
+                            <option value="0.75">Teja de barro (75% eficiencia)</option>
+                            <option value="0.78">Teja de concreto (78% eficiencia)</option>
+                            <option value="0.85">Asbesto/uralita (85% eficiencia)</option>
+                            <option value="0.70">Madera (70% eficiencia)</option>
+                            <option value="0.88">Pizarra (88% eficiencia)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="rainfall">Precipitación anual (mm):</label>
+                        <input type="number" id="rainfall" min="500" max="1500" value="800" required>
+                        <small>Precipitación promedio en Zinacantepec: 800 mm</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="householdSize">Personas en el hogar:</label>
+                        <input type="number" id="householdSize" min="1" value="4" required>
+                    </div>
+                    
+                    <div class="investment-section">
+                        <h3>Análisis de Inversión</h3>
+                        <div class="form-group">
+                            <label for="systemCost">Costo del sistema de captación ($):</label>
+                            <input type="number" id="systemCost" min="0" placeholder="Ej: 5000">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="monthlySavings">Ahorro mensual estimado ($):</label>
+                            <input type="number" id="monthlySavings" min="0" placeholder="Ej: 200">
+                        </div>
+                    </div>
+                    
+                    <button type="button" id="calculateBtn">Calcular Captación</button>
+                </form>
+                
+                <div id="results" class="results">
+                    <h2>Resultados de Captación</h2>
+                    
+                    <div class="result-item">
+                        <span>Agua captable anual:</span>
+                        <span id="annualWater" class="result-value">0 litros</span>
+                    </div>
+                    
+                    <div class="result-item">
+                        <span>Equivalente en tinacos (1100L):</span>
+                        <span id="tinacos" class="result-value">0 tinacos</span>
+                    </div>
+                    
+                    <div class="result-item">
+                        <span>Ahorro económico anual:</span>
+                        <span id="savings" class="result-value">$0 MXN</span>
+                    </div>
+                    
+                    <div class="result-item">
+                        <span>Autonomía en época seca:</span>
+                        <span id="autonomy" class="result-value">0 días</span>
+                    </div>
+                    
+                    <div class="result-item">
+                        <span>Porcentaje de necesidades cubiertas:</span>
+                        <span id="coverage" class="result-value">0%</span>
+                    </div>
+                    
+                    <div id="roiResult" class="investment-section" style="display: none;">
+                        <h3>Retorno de Inversión (ROI)</h3>
+                        <div class="result-item">
+                            <span>Tiempo de recuperación:</span>
+                            <span id="roiTime" class="result-value">0 meses</span>
+                        </div>
+                        <p id="roiMessage" style="margin-top: 10px; font-style: italic;"></p>
+                    </div>
+                    
+                    <div id="equivalentsSection" style="display: none;">
+                        <h3>Equivalencias Prácticas</h3>
+                        <p>Tu agua captada equivale a:</p>
+                        <div class="equivalents-container">
+                            <div class="equivalent-card">
+                                <div class="equivalent-icon">🚿</div>
+                                <div class="equivalent-value" id="showers">0</div>
+                                <div>Duchas</div>
+                            </div>
+                            <div class="equivalent-card">
+                                <div class="equivalent-icon">👕</div>
+                                <div class="equivalent-value" id="laundry">0</div>
+                                <div>Lavadoras</div>
+                            </div>
+                            <div class="equivalent-card">
+                                <div class="equivalent-icon">🚗</div>
+                                <div class="equivalent-value" id="carWashes">0</div>
+                                <div>Lavadas de auto</div>
+                            </div>
+                            <div class="equivalent-card">
+                                <div class="equivalent-icon">🌱</div>
+                                <div class="equivalent-value" id="plants">0</div>
+                                <div>Plantas regadas</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="chart-container">
+                        <h3>Distribución de Agua Captada</h3>
+                        <canvas id="waterChart" width="400" height="200"></canvas>
+                    </div>
+                    
+                    <div class="share-buttons">
+                        <div class="share-btn whatsapp-btn" id="shareWhatsApp">
+                            📱 Compartir por WhatsApp
+                        </div>
+                        <div class="share-btn twitter-btn" id="shareTwitter">
+                            🐦 Compartir en Twitter
+                        </div>
+                        <div class="share-btn facebook-btn" id="shareFacebook">
+                            👍 Compartir en Facebook
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="savedResults" class="saved-results" style="display: none;">
+                    <h3>Último Cálculo Guardado</h3>
+                    <p>Tenemos guardado tu último cálculo. ¿Quieres verlo?</p>
+                    <button id="loadSavedResults" style="background: #4CAF50; margin-top: 10px;">Cargar Resultados Anteriores</button>
+                </div>
+            </section>
+            
+            <section class="info-section">
+                <h2>Información sobre Captación de Agua</h2>
+                
+                <div class="info-box">
+                    <h3>Fórmula de Cálculo</h3>
+                    <p>La calculadora utiliza la siguiente fórmula científica:</p>
+                    <p><strong>Agua Captada (litros/año) = Área techo (m²) × Precipitación anual (mm) × Coeficiente material</strong></p>
+                    <p>Donde 1 mm de lluvia sobre 1 m² = 1 litro de agua.</p>
+                </div>
+                
+                <div class="info-box">
+                    <h3>Coeficientes de Materiales</h3>
+                    <ul class="material-list">
+                        <li>Lámina galvanizada <span class="coeficiente">0.90</span></li>
+                        <li>Lámina acanalada <span class="coeficiente">0.85</span></li>
+                        <li>Concreto/losa <span class="coeficiente">0.80</span></li>
+                        <li>Teja de barro <span class="coeficiente">0.75</span></li>
+                        <li>Teja de concreto <span class="coeficiente">0.78</span></li>
+                        <li>Asbesto/uralita <span class="coeficiente">0.85</span></li>
+                        <li>Madera <span class="coeficiente">0.70</span></li>
+                        <li>Pizarra <span class="coeficiente">0.88</span></li>
+                    </ul>
+                </div>
+                
+                <div class="info-box">
+                    <h3>Beneficios para Zinacantepec</h3>
+                    <p>La captación de agua de lluvia en Zinacantepec puede:</p>
+                    <ul>
+                        <li>Reducir la dependencia de pipas de agua</li>
+                        <li>Disminuir gastos familiares en agua</li>
+                        <li>Mitigar problemas de escasez en época seca</li>
+                        <li>Contribuir a la sustentabilidad hídrica</li>
+                    </ul>
+                </div>
+                             <img src="agua pluvial.jpg">
+            </section>
+        </div>
+        
+        <footer>
+            <p>Proyecto Escolar - Calculadora de Captación de Agua</p>
+            <p>Basado en investigación y estudios locales de Zinacantepec</p>
+        </footer>
+    </div>
+
+    <script>
+        const CONFIG = {
+            PRECIO_AGUA: 10,
+            CAPACIDAD_TINACO: 1100,
+            CONSUMO_PERSONA: 100,
+            EQUIVALENCIAS: {
+                DUCHA: 60,
+                LAVADORA: 50,
+                CAR_WASH: 100,
+                PLANTA: 5
+            }
+        };
+        
+        let waterChart = null;
+        
+        const elements = {
+            calculateBtn: document.getElementById('calculateBtn'),
+            resultsDiv: document.getElementById('results'),
+            savedResultsDiv: document.getElementById('savedResults'),
+            loadSavedBtn: document.getElementById('loadSavedResults')
+        };
+        
+        // Funciones principales
+        function calcularCaptacion() {
+            const inputs = getInputs();
+            if (!validarEntradas(inputs)) return;
+            
+            const resultados = calcularResultados(inputs);
+            const equivalencias = calcularEquivalencias(resultados.litrosAnuales);
+            
+            mostrarResultados(resultados, equivalencias);
+            guardarEnLocalStorage({...resultados, equivalencias, fecha: new Date().toISOString()});
+            crearGrafico(resultados.litrosAnuales, inputs.personas * CONFIG.CONSUMO_PERSONA * 365);
+        }
+        
+        function getInputs() {
+            return {
+                areaTecho: parseFloat(document.getElementById('roofArea').value),
+                coeficienteMaterial: parseFloat(document.getElementById('roofMaterial').value),
+                precipitacion: parseFloat(document.getElementById('rainfall').value),
+                personas: parseInt(document.getElementById('householdSize').value),
+                costo: parseFloat(document.getElementById('systemCost').value) || 0,
+                ahorroMensual: parseFloat(document.getElementById('monthlySavings').value) || 0
+            };
+        }
+        
+        function calcularResultados(inputs) {
+            const litrosAnuales = inputs.areaTecho * inputs.precipitacion * inputs.coeficienteMaterial;
+            const consumoDiario = inputs.personas * CONFIG.CONSUMO_PERSONA;
+            
+            return {
+                litrosAnuales,
+                tinacos: litrosAnuales / CONFIG.CAPACIDAD_TINACO,
+                ahorro: (litrosAnuales / 1000) * CONFIG.PRECIO_AGUA,
+                autonomiaDias: Math.floor((litrosAnuales * 0.1) / consumoDiario),
+                cobertura: Math.min(100, (litrosAnuales / (consumoDiario * 365)) * 100),
+                tiempoROI: (inputs.costo > 0 && inputs.ahorroMensual > 0) ? inputs.costo / inputs.ahorroMensual : 0
+            };
+        }
+        
+        function calcularEquivalencias(litros) {
+            const eq = CONFIG.EQUIVALENCIAS;
+            return {
+                duchas: Math.floor(litros / eq.DUCHA),
+                lavadoras: Math.floor(litros / eq.LAVADORA),
+                carWashes: Math.floor(litros / eq.CAR_WASH),
+                plantas: Math.floor(litros / eq.PLANTA)
+            };
+        }
+        
+        function validarEntradas({areaTecho, coeficienteMaterial, precipitacion, personas}) {
+            if (isNaN(areaTecho) || areaTecho < 1 || areaTecho > 1000) {
+                alert('Por favor, ingresa un área de techo válida (entre 1 y 1000 m²)');
+                return false;
+            }
+            if (isNaN(coeficienteMaterial)) {
+                alert('Por favor, selecciona un material de techo');
+                return false;
+            }
+            if (isNaN(precipitacion) || precipitacion < 5 || precipitacion > 1500) {
+                alert('Por favor, ingresa una precipitación válida (entre 5 y 1500 mm)');
+                return false;
+            }
+            if (isNaN(personas) || personas < 1) {
+                alert('Por favor, ingresa un número válido de personas (mínimo 1)');
+                return false;
+            }
+            return true;
+        }
+        
+        function mostrarResultados(resultados, equivalencias) {
+            // Actualizar valores en la UI
+            const displayValues = {
+                annualWater: formatearNumero(resultados.litrosAnuales) + ' litros',
+                tinacos: Math.round(resultados.tinacos * 10) / 10 + ' tinacos',
+                savings: '$' + formatearNumero(Math.round(resultados.ahorro)) + ' MXN',
+                autonomy: resultados.autonomiaDias + ' días',
+                coverage: Math.round(resultados.cobertura * 10) / 10 + '%',
+                showers: equivalencias.duchas,
+                laundry: equivalencias.lavadoras,
+                carWashes: equivalencias.carWashes,
+                plants: equivalencias.plantas
+            };
+            
+            Object.keys(displayValues).forEach(key => {
+                const element = document.getElementById(key);
+                if (element) element.textContent = displayValues[key];
+            });
+            
+            document.getElementById('roiResult').style.display = resultados.tiempoROI > 0 ? 'block' : 'none';
+            if (resultados.tiempoROI > 0) {
+                document.getElementById('roiTime').textContent = Math.round(resultados.tiempoROI * 10) / 10 + ' meses';
+                document.getElementById('roiMessage').textContent = 
+                    `Recuperarás tu inversión en aproximadamente ${Math.round(resultados.tiempoROI)} meses`;
+            }
+            
+            document.getElementById('equivalentsSection').style.display = 'block';
+            elements.resultsDiv.style.display = 'block';
+        }
+        
+        function formatearNumero(numero) {
+            return numero.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }
+        
+        function guardarEnLocalStorage(resultados) {
+            localStorage.setItem('ultimoResultadoAgu2025', JSON.stringify(resultados));
+        }
+        
+        function cargarResultadosGuardados() {
+            const guardado = localStorage.getItem('ultimoResultadoAgu2025');
+            if (guardado) {
+                const resultados = JSON.parse(guardado);
+                mostrarResultados(resultados, resultados.equivalencias);
+                crearGrafico(resultados.litrosAnuales, 4 * CONFIG.CONSUMO_PERSONA * 365);
+                elements.savedResultsDiv.style.display = 'none';
+            }
+        }
+        
+        function crearGrafico(aguaCaptada, consumoAnual) {
+            const ctx = document.getElementById('waterChart').getContext('2d');
+            
+            if (waterChart) waterChart.destroy();
+            
+            const porcentajeCobertura = Math.min(100, (aguaCaptada / consumoAnual) * 100);
+            
+            waterChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Agua Captada', 'Necesidad Restante'],
+                    datasets: [{
+                        data: [porcentajeCobertura, 100 - porcentajeCobertura],
+                        backgroundColor: ['#4CAF50', '#E0E0E0'],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { position: 'bottom' },
+                        tooltip: {
+                            callbacks: {
+                                label: context => `${context.label}: ${context.raw.toFixed(1)}%`
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        function configurarCompartir() {
+            const compartirEnRed = (red, texto) => {
+                const urls = {
+                    whatsapp: `https://wa.me/?text=${encodeURIComponent(texto)}`,
+                    twitter: `https://twitter.com/intent/tweet?text=${encodeURIComponent(texto)}`,
+                    facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}&quote=${encodeURIComponent(texto)}`
+                };
+                window.open(urls[red], '_blank');
+            };
+            
+            document.getElementById('shareWhatsApp').addEventListener('click', () => {
+                const texto = `¡Calculé que puedo captar ${document.getElementById('annualWater').textContent} de agua de lluvia al año! 🌧️💧 Usa la calculadora de captación de agua de Zinacantepec.`;
+                compartirEnRed('whatsapp', texto);
+            });
+            
+            document.getElementById('shareTwitter').addEventListener('click', () => {
+                const texto = `¡Calculé que puedo captar ${document.getElementById('annualWater').textContent} de agua de lluvia al año! 🌧️💧 Usa la calculadora de Zinacantepec. #AguaPluvial #Sostenibilidad`;
+                compartirEnRed('twitter', texto);
+            });
+            
+            document.getElementById('shareFacebook').addEventListener('click', () => {
+                const texto = `¡Calculé que puedo captar ${document.getElementById('annualWater').textContent} de agua de lluvia al año! 🌧️💧`;
+                compartirEnRed('facebook', texto);
+            });
+        }
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            elements.calculateBtn.addEventListener('click', calcularCaptacion);
+            
+            document.querySelectorAll('input, select').forEach(input => {
+                input.addEventListener('keypress', e => {
+                    if (e.key === 'Enter') calcularCaptacion();
+                });
+            });
+            
+            elements.loadSavedBtn.addEventListener('click', cargarResultadosGuardados);
+            configurarCompartir();
+            
+            if (localStorage.getItem('ultimoResultadoAgu2025')) {
+                elements.savedResultsDiv.style.display = 'block';
+            }
+            
+            console.log('Calculadora de Captación de Agua de Lluvia - Zinacantepec inicializada');
+        });
+    </script>
+</body>
+</html>

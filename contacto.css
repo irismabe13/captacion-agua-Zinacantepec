@@ -1,0 +1,161 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;}
+body {
+    background: #70bbc5;
+    color: #333;
+    line-height: 1.6;
+    min-height: 100vh;
+    align-items: center;
+    justify-content: center;}
+.container {
+    flex: 7;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    position: relative;}
+.contact-form-container {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 15px 35px rgb(130, 216, 223);
+    overflow: hidden;
+    padding: 40px;}
+.header {
+    text-align: center;
+    margin-bottom: 30px;
+    background-color: #e1e1e1;}
+.header h1 {
+    color: #333;
+    font-size: 2.2rem;
+    margin-bottom: 10px;}
+.header p {
+    color: #666;
+    font-size: 1.1rem;}
+.contact-form {
+    display: block;}
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #444;}
+input, textarea {
+    width: 100%;
+    padding: 15px;
+    border: 2px solid #e1e1e1;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: all 0.3s;}
+input:focus, textarea:focus {
+    border-color: #667eea;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);}
+textarea {
+    resize: vertical;
+    min-height: 120px;}
+.submit-btn {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    padding: 16px 30px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: 600;
+    transition: all 0.3s;
+    width: 100%;
+    margin-top: 10px;}
+.submit-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 7px 15px rgba(102, 126, 234, 0.3);}
+.confirmation-message {
+    text-align: center;
+    padding: 40px 20px;
+    display: none;}
+.message-icon {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 40px;
+    margin: 0 auto 25px;
+    box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);}
+.confirmation-message h2 {
+    color: #333;
+    margin-bottom: 15px;
+    font-size: 1.8rem;}
+.confirmation-message p {
+    color: #666;
+    font-size: 1.1rem;
+    margin-bottom: 30px;
+    line-height: 1.6;}
+.back-btn {
+    background: #667eea;
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 600;
+    transition: all 0.3s;}
+.back-btn:hover {
+    background: #5a6fd8;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 10px rgba(102, 126, 234, 0.3);}
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }}
+.contact-form, .confirmation-message {
+    animation: fadeIn 0.5s ease-out;}
+@media (max-width: 768px) {
+    .contact-form-container {
+        padding: 30px 20px;    }
+    .header h1 {
+        font-size: 1.8rem;}
+    input, textarea {
+        padding: 12px;}  }
+
+.section-articulos {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem; 
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 4rem 15px;
+    justify-content: center;}
+@media (max-width: 768px) {
+    .section-articulos {
+        padding: 40px 0;}
+    .contact-form {
+        max-width: 90%; 
+        padding: 25px;}
+    .section-title {
+        font-size: 1.8rem;}
+    input[type="text"],
+    input[type="email"],
+    input[type="tel"],
+    textarea,
+    .btn-primary {
+        font-size: 1rem; } }
+@media (max-width: 768px) {
+    .section-articulos {
+        padding: 30px 0; }
+    .container {
+        padding: 0 10px;}
+    .contact-form {
+        max-width: 100%; 
+        padding: 20px;
+        box-shadow: none; }
+    .section-title {
+        font-size: 1.5rem;
+        margin-bottom: 20px;}
+    .form-group {
+        margin-bottom: 15px;} }
+    
